@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  base: '/twenty-20-20-rule/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
