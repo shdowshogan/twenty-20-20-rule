@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useAudioAlert } from './useAudioAlert';
 
 export type TimerState = 'idle' | 'work' | 'rest';
 
@@ -23,6 +24,7 @@ export function useTimer(): UseTimerReturn {
   const [isRunning, setIsRunning] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
   const intervalRef = useRef<number | null>(null);
+  const { speak } = useAudioAlert();
 
   useEffect(() => {
     if ('Notification' in window) {
@@ -65,10 +67,12 @@ export function useTimer(): UseTimerReturn {
           if (state === 'work') {
             setState('rest');
             sendNotification('👀 Time to Rest!', 'Look at something 20 feet away for 20 seconds');
+            speak('Rest. Look away from your screen.');
             return REST_DURATION;
           } else {
             setState('work');
             sendNotification('💪 Back to Work!', 'Your 20 second eye break is over');
+            speak('Work. You can continue now.');
             return WORK_DURATION;
           }
         }
@@ -81,7 +85,7 @@ export function useTimer(): UseTimerReturn {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, state, sendNotification]);
+  }, [isRunning, state, sendNotification, speak]);
 
   const start = useCallback(() => {
     if (state === 'idle') {
